@@ -5,7 +5,8 @@
 #include <random>
 #include "Tile.h"
 
-class World : public sf::Drawable{
+class World : public sf::Drawable
+{
 	int tileSize, horizontalTiles;
 	int width, height;
 	std::vector<Tile> tiles;
@@ -17,14 +18,14 @@ class World : public sf::Drawable{
 public:
 	World(int tileSize, int width, int height, sf::Vector2f startPos, sf::Vector2f endPos);
 	World();
-	World(const World& world);
-	World& operator=(const World& other);
+	World(const World &world);
+	World &operator=(const World &other);
 
-	Tile& operator[](sf::Vector2f position);
-	const Tile& operator[](sf::Vector2f position) const;
+	Tile &operator[](sf::Vector2f position);
+	const Tile &operator[](sf::Vector2f position) const;
 
-	const Tile& getStart() const;
-	const Tile& getEnd() const;
+	const Tile &getStart() const;
+	const Tile &getEnd() const;
 	tile::ID tileAt(sf::Vector2f position) const;
 	void setIDtoTile(sf::Vector2f position, tile::ID id);
 
@@ -34,7 +35,7 @@ public:
 	void clearPath();
 
 	void randomize();
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 };
 
-inline std::mt19937& getRandomEngine();
+inline std::mt19937 &getRandomEngine();

@@ -3,24 +3,26 @@
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Event.hpp>
 
-Game::Game(int width, int height, int tileSize, sf::Vector2f startPos, sf::Vector2f endPos) :
-renderWindow(sf::VideoMode(width,height), "A star implementation"),
-world(World(tileSize, width, height, startPos, endPos)),
-solver(tileSize, width, height, { { 0, 0 }, world }, { { 0, 0 }, world }),
-solveFinished(true), isDiagonalEnabled(false), movingStart(false),
-movingEnd(false), startExists(true), endExists(true){
+Game::Game(int width, int height, int tileSize, sf::Vector2f startPos, sf::Vector2f endPos) : renderWindow(sf::VideoMode(width, height), "A star implementation"),
+																																															world(World(tileSize, width, height, startPos, endPos)),
+																																															solver(tileSize, width, height, {{0, 0}, world}, {{0, 0}, world}),
+																																															solveFinished(true), isDiagonalEnabled(false), movingStart(false),
+																																															movingEnd(false), startExists(true), endExists(true)
+{
 	loadTexts(height);
 }
 
-void Game::run(){
-	while (renderWindow.isOpen()){
+void Game::run()
+{
+	while (renderWindow.isOpen())
+	{
 		processInput();
 		render();
 	}
 }
 
-
-void Game::loadTexts(int height){
+void Game::loadTexts(int height)
+{
 	//Load font
 	font.loadFromFile("./assets/Sansation.ttf");
 
@@ -54,17 +56,20 @@ void Game::loadTexts(int height){
 	noTileText.setFillColor(sf::Color::Red);
 }
 
-void Game::processMouseInput(){
+void Game::processMouseInput()
+{
 	auto mousePos = sf::Mouse::getPosition(renderWindow);
 	sf::Vector2f mousePosition(mousePos.x, mousePos.y);
 
-	if (movingStart){
+	if (movingStart)
+	{
 		world.setIDtoTile(mousePosition, tile::Start);
 		movingStart = false;
 		startExists = true;
 		return;
 	}
-	if (movingEnd){
+	if (movingEnd)
+	{
 		world.setIDtoTile(mousePosition, tile::End);
 		movingEnd = false;
 		endExists = true;
@@ -72,7 +77,8 @@ void Game::processMouseInput(){
 	}
 
 	auto tile = world.tileAt(mousePosition);
-	switch (tile){
+	switch (tile)
+	{
 	case tile::nonWalkable:
 		world.setIDtoTile(mousePosition, tile::Empty);
 		break;
@@ -91,12 +97,15 @@ void Game::processMouseInput(){
 		world.setIDtoTile(mousePosition, tile::Empty);
 		movingEnd = true;
 		endExists = false;
-	default: break;
+	default:
+		break;
 	}
 }
 
-void Game::processKeyboardInput(sf::Keyboard::Key& key){
-	switch (key){
+void Game::processKeyboardInput(sf::Keyboard::Key &key)
+{
+	switch (key)
+	{
 	case sf::Keyboard::S:
 		solvePath();
 		break;
@@ -109,46 +118,56 @@ void Game::processKeyboardInput(sf::Keyboard::Key& key){
 		break;
 	case sf::Keyboard::R:
 		world.randomize();
-	default: break;
+	default:
+		break;
 	}
 }
 
-void Game::solvePath(){
+void Game::solvePath()
+{
 	solveFinished = false;
 	world.clearPath();
 	noTileText.setString("");
 	solveTime.restart();
-	if (startExists && endExists){
+	if (startExists && endExists)
+	{
 		auto path = solver.path(isDiagonalEnabled,
-			world.getStart().getPosition(), world.getEnd().getPosition());
-		if (path.second){
+														world.getStart().getPosition(), world.getEnd().getPosition());
+		if (path.second)
+		{
 			pathFoundText.setString("");
-			for (auto&& current : path.first){
+			for (auto &&current : path.first)
+			{
 				if (world.tileAt(current.position) == tile::Empty)
 					world.setIDtoTile(current.position, tile::Path);
 			}
 		}
-		else{
+		else
+		{
 			pathFoundText.setString("There is no path");
 		}
 
 		timeText.setString("It took " +
-			std::to_string(solveTime.getElapsedTime().asMicroseconds()) +
-			" microseconds to solve");
+											 std::to_string(solveTime.getElapsedTime().asMicroseconds()) +
+											 " microseconds to solve");
 		operationsText.setString("It took " +
-			std::to_string(solver.getOperations()) + " operations");
+														 std::to_string(solver.getOperations()) + " operations");
 	}
-	else{
+	else
+	{
 		noTileText.setString("There is either no start or no end");
 	}
 }
 
 #include <iostream>
 
-void Game::processInput(){
+void Game::processInput()
+{
 	sf::Event event;
-	while (renderWindow.pollEvent(event)){
-		switch (event.type){
+	while (renderWindow.pollEvent(event))
+	{
+		switch (event.type)
+		{
 		case sf::Event::Closed:
 			renderWindow.close();
 			break;
@@ -158,12 +177,14 @@ void Game::processInput(){
 		case sf::Event::KeyPressed:
 			processKeyboardInput(event.key.code);
 			break;
-		default: break;
+		default:
+			break;
 		}
 	}
 }
 
-void Game::render(){
+void Game::render()
+{
 	renderWindow.clear();
 
 	renderWindow.draw(world);
@@ -176,8 +197,9 @@ void Game::render(){
 	renderWindow.display();
 }
 
-void Game::setDiagonalTextString(){
+void Game::setDiagonalTextString()
+{
 	std::string enabledOrDisabled =
-		isDiagonalEnabled ? "enabled" : "disabled";
+			isDiagonalEnabled ? "enabled" : "disabled";
 	diagonalEnabledText.setString("Diagonal movement is " + enabledOrDisabled);
 }
